@@ -9,14 +9,14 @@ services:
     image: digitalocean.com/php
     container_name: app
     restart: unless-stopped
-    tty: true
+    depends_on:
+      - db
+      - redis
     environment:
-      SERVICE_NAME: app
-      SERVICE_TAGS: dev
+      CONTAINER_ROLE: app
     working_dir: /var/www
     volumes:
        - ./:/var/www
-       - ./php/local.ini:/usr/local/etc/php/conf.d/local.ini
     networks:
       - app-network
 
@@ -46,11 +46,54 @@ services:
     environment:
       MYSQL_DATABASE: laravel
       MYSQL_ROOT_PASSWORD: password
-      SERVICE_TAGS: dev
-      SERVICE_NAME: mysql
     volumes:
       - dbdata:/var/lib/mysql
       - ./mysql/my.cnf:/etc/mysql/my.cnf
+    networks:
+      - app-network
+
+  #Redis Service
+  redis:
+    image: redis
+    container_name: redis
+    restart: unless-stopped
+    ports:
+      - "6379:6379"
+    volumes:
+    - redis-data:/data
+    networks:
+      - app-network
+
+  scheduler:
+    image: digitalocean.com/php
+    container_name: scheduler
+    restart: unless-stopped
+    depends_on:
+      - app
+    volumes:
+      - .:/var/www
+    environment:
+      APP_ENV: local
+      CONTAINER_ROLE: scheduler
+      CACHE_DRIVER: redis
+      QUEUE_DRIVER: redis
+      REDIS_HOST: redis
+    networks:
+      - app-network
+
+  queue:
+    image: digitalocean.com/php
+    container_name: queue
+    depends_on:
+      - app
+    volumes:
+      - .:/var/www
+    environment:
+      APP_ENV: local
+      CONTAINER_ROLE: queue
+      CACHE_DRIVER: redis
+      QUEUE_DRIVER: redis
+      REDIS_HOST: redis
     networks:
       - app-network
 
@@ -63,3 +106,4 @@ networks:
 volumes:
   dbdata:
     driver: local
+  redis-data:
