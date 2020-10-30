@@ -1,6 +1,6 @@
 <?php
 
-use Illuminate\Http\Request;
+use App\Http\Controllers\UrlController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -14,6 +14,13 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-Route::middleware('auth:api')->get('/user', function (Request $request) {
-    return $request->user();
+Route::group([
+    'namespace' => 'v1/statistics/url',
+    'prefix' => 'v1/statistics/url',
+    'as' => 'statistics.',
+], function () {
+    Route::post('', [UrlController::class, 'createShortUrl'])->name('create-url');
+
+    Route::get('get/{uid}', [UrlController::class, 'getUrlStatistics'])->name('get-statistics');
 });
+
