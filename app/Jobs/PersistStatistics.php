@@ -19,7 +19,12 @@ class PersistStatistics implements ShouldQueue
 {
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
 
-    protected string $cacheKey = 'cached_keys';
+    protected string $cacheKey;
+
+    public function __construct(array $config)
+    {
+        $this->cacheKey = $config['cache_key'];
+    }
 
     public function handle()
     {
@@ -29,7 +34,7 @@ class PersistStatistics implements ShouldQueue
             $keys = Cache::get($this->cacheKey);
 
             $statistics = [];
-            // возможно сделать получение всего файлика??
+
             foreach ($keys as $key) {
                 $statistics[] = Cache::get($key);
             }

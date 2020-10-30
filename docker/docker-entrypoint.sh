@@ -11,13 +11,13 @@ if [ "$role" = "app" ]; then
 elif [ "$role" = "queue" ]; then
 
     echo "Running the queue..."
-    php /var/www/artisan queue:work --verbose --tries=3 --timeout=90
+    php /var/www/artisan queue:work --tries=10 --timeout=30
 
 elif [ "$role" = "scheduler" ]; then
 
     while [ true ]
     do
-      php /var/www/artisan schedule:run --verbose --no-interaction &
+      php /var/www/artisan schedule:run --no-interaction &
       sleep 60
     done
 

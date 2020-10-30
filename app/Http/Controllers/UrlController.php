@@ -62,7 +62,7 @@ class UrlController extends Controller
                 return response()->json(['error' => 'Short url not found'], JsonResponse::HTTP_NOT_FOUND);
             }
 
-            HitStatistic::dispatch($url, $request->header('user_agent'));
+            HitStatistic::dispatch($url, $request->header('user_agent'), config('cache'));
         } catch (Throwable $exception) {
             Log::error('Error while dispatching job: ' . $exception->getMessage());
 

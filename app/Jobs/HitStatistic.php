@@ -24,12 +24,13 @@ class HitStatistic implements ShouldQueue
 
     protected Url $url;
     protected string $userAgent;
-    protected string $cacheKey = 'cached_keys';
+    protected string $cacheKey;
 
-    public function __construct(Url $url, string $userAgent)
+    public function __construct(Url $url, string $userAgent, array $config)
     {
         $this->url = $url;
         $this->userAgent = $userAgent;
+        $this->cacheKey = $config['cache_key'];
     }
 
     public function handle()
